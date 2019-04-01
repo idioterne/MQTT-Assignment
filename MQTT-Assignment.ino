@@ -28,6 +28,8 @@
 
 // Update these with values suitable for your network.
 
+const int buttonpin = 5;
+
 const char* ssid = "Das phone";
 const char* password = "wwgu1535";
 const char* mqtt_server = "192.168.43.209";
@@ -107,6 +109,7 @@ void reconnect() {
 
 void setup() {
   pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
+  pinMode(buttonpin, INPUT);
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
@@ -121,12 +124,13 @@ void loop() {
   client.loop();
 
   long now = millis();
-  if (now - lastMsg > 2000) {
-    lastMsg = now;
-    ++value;
-    snprintf (msg, 50, "hello world #%ld", value);
-    Serial.print("Publish message: ");
-    Serial.println(msg);
-    client.publish("outTopic", msg);
+  if (now - lastMsg > 2000 && digitalRead(buttonpin)==HIGH) {
+      lastMsg = now;
+      ++value;
+      snprintf (msg, 50, "hello world #%ld", value);
+      Serial.print("Publish message: ");
+      Serial.println(msg);
+      client.publish("outTopic", msg);
   }
+  
 }
